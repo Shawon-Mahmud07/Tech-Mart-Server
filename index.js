@@ -27,6 +27,7 @@ async function run() {
     await client.connect();
 
     const techMartCollection = client.db("techMartDB").collection("products");
+    const cartCollection = client.db("techMartDB").collection("carts");
 
     //get brand products by brand name
     app.get("/products/:title", async (req, res) => {
@@ -49,6 +50,37 @@ async function run() {
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
       const result = await techMartCollection.insertOne(newProduct);
+      res.send(result);
+    });
+    // products post
+    app.post("/carts", async (req, res) => {
+      const newCart = req.body;
+      const result = await cartCollection.insertOne(newCart);
+      res.send(result);
+    });
+
+    // Update single product by id
+    app.put("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const newUpdateProduct = req.body;
+      const options = { upsert: true };
+      const updateProduct = {
+        $set: {
+          name: newUpdateProduct.name,
+          bName: newUpdateProduct.bName,
+          type: newUpdateProduct.type,
+          price: newUpdateProduct.price,
+          rating: newUpdateProduct.rating,
+          details: newUpdateProduct.details,
+          photo: newUpdateProduct.photo,
+        },
+      };
+      const result = await techMartCollection.updateOne(
+        filter,
+        updateProduct,
+        options
+      );
       res.send(result);
     });
 
