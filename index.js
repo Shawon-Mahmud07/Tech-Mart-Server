@@ -29,10 +29,19 @@ async function run() {
 
     const techMartCollection = client.db("techMartDB").collection("products");
 
+    // brand products get
+    app.get("/products/:title", async (req, res) => {
+      const title = req.params.title;
+      console.log(title);
+      const query = { bName: title };
+      const cursor = techMartCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     // products post
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
-      console.log(newProduct);
+
       const result = await techMartCollection.insertOne(newProduct);
       res.send(result);
     });
