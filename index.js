@@ -26,6 +26,17 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const techMartCollection = client.db("techMartDB").collection("products");
+
+    // products post
+    app.post("/products", async (req, res) => {
+      const newProduct = req.body;
+      console.log(newProduct);
+      const result = await techMartCollection.insertOne(newProduct);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -37,10 +48,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
