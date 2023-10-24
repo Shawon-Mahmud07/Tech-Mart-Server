@@ -38,6 +38,15 @@ async function run() {
       res.send(result);
     });
 
+    //get carts products by user's email
+    app.get("/carts/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = cartCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     // get single product by id
     app.get("/products/id/:id", async (req, res) => {
       const id = req.params.id;
@@ -52,7 +61,7 @@ async function run() {
       const result = await techMartCollection.insertOne(newProduct);
       res.send(result);
     });
-    // products post
+    //AddToCart products using post method
     app.post("/carts", async (req, res) => {
       const newCart = req.body;
       const result = await cartCollection.insertOne(newCart);
