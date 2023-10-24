@@ -1,7 +1,7 @@
 var express = require("express");
 var cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -11,7 +11,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xtqtqqh.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -29,19 +28,26 @@ async function run() {
 
     const techMartCollection = client.db("techMartDB").collection("products");
 
-    // brand products get
+    //get brand products by brand name
     app.get("/products/:title", async (req, res) => {
       const title = req.params.title;
-      console.log(title);
       const query = { bName: title };
       const cursor = techMartCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
+
+    // get single product by id
+    app.get("/products/id/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await techMartCollection.findOne(query);
+      res.send(result);
+    });
+
     // products post
     app.post("/products", async (req, res) => {
       const newProduct = req.body;
-
       const result = await techMartCollection.insertOne(newProduct);
       res.send(result);
     });
@@ -57,6 +63,10 @@ async function run() {
   }
 }
 run().catch(console.dir);
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
