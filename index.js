@@ -61,6 +61,7 @@ async function run() {
       const result = await techMartCollection.insertOne(newProduct);
       res.send(result);
     });
+
     //AddToCart products using post method
     app.post("/carts", async (req, res) => {
       const newCart = req.body;
@@ -90,6 +91,14 @@ async function run() {
         updateProduct,
         options
       );
+      res.send(result);
+    });
+
+    // delete MyCart product by using delete method
+    app.delete("/carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: id };
+      const result = await cartCollection.deleteOne(query);
       res.send(result);
     });
 
